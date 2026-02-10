@@ -9,7 +9,7 @@ from fit_to_csv import parse_fit_record_rows, rows_to_ordered_csv_bytes
 
 
 def _render_header() -> None:
-    st.set_page_config(page_title="Garmin FIT2CSV", page_icon=":runner:", layout="centered")
+    st.set_page_config(page_title="fit2csv", page_icon=":runner:", layout="centered")
     st.title("Garmin FIT to CSV Generator")
     st.write(
         "Upload a Garmin `.fit` file. This app will generate a running-focused CSV file."
