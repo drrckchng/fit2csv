@@ -9,11 +9,10 @@ from fit_to_csv import parse_fit_record_rows, rows_to_ordered_csv_bytes
 
 
 def _render_header() -> None:
-    st.set_page_config(page_title="Garmin FIT Record to CSV", page_icon=":runner:", layout="centered")
-    st.title("Garmin FIT Record to CSV")
+    st.set_page_config(page_title="Garmin FIT2CSV", page_icon=":runner:", layout="centered")
+    st.title("Garmin FIT to CSV Generator")
     st.write(
-        "Upload a Garmin `.fit` file. This app exports only `record` rows, "
-        "with key running metrics first and all other decoded record columns appended."
+        "Upload a Garmin `.fit` file. This app will generate a running-focused CSV file."
     )
 
 
@@ -50,7 +49,7 @@ def main() -> None:
             return
 
         csv_bytes = rows_to_ordered_csv_bytes(rows, units_map)
-        output_name = f"{Path(uploaded_file.name).stem}_record.csv"
+        output_name = f"{Path(uploaded_file.name).stem}.csv"
 
         st.success(f"Parsed {len(rows)} record rows.")
         st.write(f"Detected sport: `{detected_sport}`")
@@ -64,7 +63,7 @@ def main() -> None:
         )
 
         st.download_button(
-            label="Download record CSV",
+            label="Download CSV",
             data=csv_bytes,
             file_name=output_name,
             mime="text/csv",
