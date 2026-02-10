@@ -1,6 +1,6 @@
 # Garmin FIT to CSV
 
-Streamlit web app that converts Garmin `.fit` files into clean running-focused CSV output.
+Streamlit web app that converts Garmin `.fit` files into a clean running-focused CSV output.
 
 https://fit2csv.streamlit.app/
 
