@@ -2,6 +2,8 @@
 
 Streamlit web app that converts Garmin `.fit` files into clean running-focused CSV output.
 
+https://fit2csv.streamlit.app/
+
 ## Local setup
 
 ```bash
