@@ -64,6 +64,10 @@ def _format_number(value: float) -> str:
     return f"{value:.3f}".rstrip("0").rstrip(".")
 
 
+def _format_whole_number(value: float) -> str:
+    return str(int(round(value)))
+
+
 def _header_with_unit(name: str, units_map: UnitsMap) -> str:
     unit = units_map.get(name, "").strip()
     return f"{name} [{unit}]" if unit else name
@@ -282,12 +286,14 @@ def rows_to_ordered_csv_bytes(rows: list[CoreRow], units_map: UnitsMap) -> bytes
         raise ValueError("No record rows were found in this FIT file.")
 
     distance_unit = units_map.get("distance", "m") or "m"
+    alt_unit = units_map.get("enhanced_altitude") or units_map.get("altitude") or "m"
     vo_unit = units_map.get("vertical_oscillation", "mm") or "mm"
     vr_unit = units_map.get("vertical_ratio", "%") or "%"
 
     base_headers = [
         "timestamp",
         f"distance [{distance_unit}]",
+        f"elevation [{alt_unit}]",
         "pace [min/km]",
         "pace [min/mi]",
         "HR [bpm]",
@@ -301,6 +307,8 @@ def rows_to_ordered_csv_bytes(rows: list[CoreRow], units_map: UnitsMap) -> bytes
     consumed_columns = {
         "timestamp",
         "distance",
+        "enhanced_altitude",
+        "altitude",
         "heart_rate",
         "cadence",
         "cadence_spm",
@@ -336,6 +344,7 @@ def rows_to_ordered_csv_bytes(rows: list[CoreRow], units_map: UnitsMap) -> bytes
         export_row: CoreRow = {
             "timestamp": row.get("timestamp", ""),
             f"distance [{distance_unit}]": row.get("distance", ""),
+            f"elevation [{alt_unit}]": "",
             "pace [min/km]": pace_km_text,
             "pace [min/mi]": pace_mi_text,
             "HR [bpm]": row.get("heart_rate", ""),
@@ -345,6 +354,10 @@ def rows_to_ordered_csv_bytes(rows: list[CoreRow], units_map: UnitsMap) -> bytes
             "GCT [ms]": row.get("gct_ms", row.get("stance_time", "")),
             f"vert ratio [{vr_unit}]": row.get("vertical_ratio", ""),
         }
+
+        elevation_value = _to_float(row.get("enhanced_altitude", row.get("altitude", "")))
+        if elevation_value is not None:
+            export_row[f"elevation [{alt_unit}]"] = _format_whole_number(elevation_value)
 
         for col in extra_columns:
             export_row[_header_with_unit(col, units_map)] = row.get(col, "")
@@ -357,3 +370,7 @@ def rows_to_ordered_csv_bytes(rows: list[CoreRow], units_map: UnitsMap) -> bytes
     writer.writerows(csv_rows)
 
     return csv_buffer.getvalue().encode("utf-8")
+
+
+
+
